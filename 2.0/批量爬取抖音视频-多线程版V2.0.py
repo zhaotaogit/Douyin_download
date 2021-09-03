@@ -114,19 +114,22 @@ download_failed_list = []
 
 
 def count(x):
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
-        }
-        resp = requests.get(url=x, headers=headers)
-        html = etree.HTML(resp.text)
-        works_count = html.xpath('//*[@id="root"]/div/div[2]/div/div[4]/div[1]/div[1]/div[1]/span/text()')[0]
-        li_list_count = html.xpath('/html/body/div/div/div[2]/div/div[4]/div[1]/div[2]/ul/li[1]/a/@href')
-        return int(works_count), li_list_count
-    except Exception as e:
-        print('因为网络问题发生错误，请重新尝试下载!')
-        print(e)
-        sys.exit()
+    while True:
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
+            }
+            resp = requests.get(url=x, headers=headers)
+            html = etree.HTML(resp.text)
+            works_count = html.xpath('//*[@id="root"]/div/div[2]/div/div[4]/div[1]/div[1]/div[1]/span/text()')[0]
+            li_list_count = html.xpath('/html/body/div/div/div[2]/div/div[4]/div[1]/div[2]/ul/li[1]/a/@href')
+            return int(works_count), li_list_count
+        except Exception as e:
+            print('因为网络问题发生错误，请重新尝试下载!')
+            print(x)
+            print(e)
+            time.sleep(120)
+            # sys.exit()
 
 
 def main():
@@ -144,7 +147,7 @@ if __name__ == '__main__':
         sec_uid = get_sec_uid(x)
         nickname, works_count = get_nickname_count(sec_uid)
         mkdir(nickname)
-        works_count,li_list_count = count(x)
+        works_count, li_list_count = count(x)
         if works_count and li_list_count:
             for root, dirs, files in os.walk(os.getcwd()):
                 for i in files:
